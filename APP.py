@@ -7,7 +7,7 @@ from supabase import create_client, Client
 # ===============================
 # Función para inicializar la base de datos
 # ===============================
-supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
+supabase: Client = create_client(st.secrets["SUPABASE_URL"], st.secrets["SUPABASE_KEY"])
 
 # ===============================
 # Datos de entrada (Fase 1)
