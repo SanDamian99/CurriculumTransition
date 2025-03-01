@@ -89,6 +89,7 @@ convalidaciones = {
 # ===============================
 
 # Mostrar logo de la universidad (asegúrate de tener "logo.png" en la carpeta)
+st.logo("logo.png")
 st.image("logo.png", caption="Facultad de Psicología y Ciencias del Comportamiento", width=200)
 
 st.title("App de Transición Curricular")
