@@ -2,30 +2,12 @@ import streamlit as st
 import sqlite3
 import datetime
 import os
+from supabase import create_client, Client
 
 # ===============================
 # Función para inicializar la base de datos
 # ===============================
-def init_db():
-    conn = sqlite3.connect("queries.db")
-    cursor = conn.cursor()
-    cursor.execute('''
-    CREATE TABLE IF NOT EXISTS queries (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        timestamp TEXT,
-        english_level INTEGER,
-        english_homologado BOOLEAN,
-        semestre_actual INTEGER,
-        doble_programa BOOLEAN,
-        selected_courses TEXT,
-        total_credits INTEGER,
-        elegibilidad TEXT
-    )
-    ''')
-    conn.commit()
-    conn.close()
-
-init_db()
+supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 # ===============================
 # Datos de entrada (Fase 1)
@@ -106,12 +88,10 @@ convalidaciones = {
 # Interfaz de Usuario (Fase 2)
 # ===============================
 
-# Mostrar logo de la universidad (asegúrate de tener el archivo "logo.png" en la misma carpeta)
+# Mostrar logo de la universidad (asegúrate de tener "logo.png" en la carpeta)
 st.image("logo.png", caption="Facultad de Psicología y Ciencias del Comportamiento", width=200)
 
 st.title("App de Transición Curricular")
-
-# Explicación inicial
 st.markdown(
     """
     **Bienvenido/a a la aplicación de apoyo para la transición curricular del programa de Psicología.**
@@ -131,7 +111,7 @@ doble_programa = st.checkbox("¿Eres estudiante de doble programa?")
 st.header("Materias cursadas (Currículo Antiguo)")
 st.write("Selecciona las materias que has cursado, agrupadas por semestre:")
 
-# Agrupar materias por semestre para facilitar la selección
+# Agrupar materias por semestre
 selected_courses = []
 courses_by_semester = {}
 for course in curriculum_antiguo:
@@ -148,26 +128,22 @@ for sem in sorted(courses_by_semester.keys()):
 st.subheader("Agregar curso adicional 'Otro'")
 if st.checkbox("¿Desea agregar un curso adicional 'Otro'?"):
     otro_creditos = st.number_input("Indica la cantidad de créditos para el curso 'Otro'", min_value=1, value=1, step=1, key="otro_creditos")
-    # Se asume semestre 0 para el curso "Otro"
     selected_courses.append({"nombre": "Otro", "semestre": 0, "creditos": otro_creditos, "prerrequisitos": []})
 
 # ===============================
 # Lógica de Cálculo y Reporte (Backend)
 # ===============================
-
 if st.button("Verificar Elegibilidad"):
 
-    # --- Guardar la consulta y resultado en la base de datos SQLite ---
+    # Calcular créditos totales y determinar límite
     total_credits = sum(course["creditos"] for course in selected_courses)
-    
-    # Determinar límite de créditos según nivel de inglés/homologación
     credit_limit = 64 if english_homologado or english_level >= 5 else 48
 
-    # Verificar materias de semestres avanzados (4 o superior)
+    # Verificar materias de semestres avanzados
     advanced_courses = [course for course in selected_courses if course["semestre"] >= 4]
     elegible = True
     razones_no_elegible = []
-
+    
     if total_credits > credit_limit:
         elegible = False
         razones_no_elegible.append(
@@ -183,23 +159,18 @@ if st.button("Verificar Elegibilidad"):
         elegible = False
         razones_no_elegible.append("Te encuentras en un semestre avanzado (4 o superior), lo cual impide la transición.")
 
-    # Cálculo del avance según créditos:
-    # Currículo antiguo: 16 créditos/semestre, nuevo: 18 créditos/semestre.
+    # Cálculo del avance (currículo antiguo: 16 créditos, nuevo: 18 créditos)
     old_semesters_completados = total_credits // 16
     old_semestre_actual = old_semesters_completados + (1 if total_credits % 16 != 0 else 0)
-
     new_semesters_completados = total_credits // 18
     new_semestre_actual = new_semesters_completados + (1 if total_credits % 18 != 0 else 0)
     missing_credits = ((new_semesters_completados + 1) * 18) - total_credits if total_credits < ((new_semesters_completados + 1) * 18) else 0
 
-    # Alertas adicionales:
     if total_credits >= 48:
-        st.warning("Recuerda: la 'Micropractica 1' debe cursarse en el intersemestral, ya que has finalizado el tercer semestre.")
-
+        st.warning("Recuerda: la 'Micropráctica 1' debe cursarse en el intersemestral, ya que has finalizado el tercer semestre.")
     if any(course["nombre"] == "Métodos y análisis cuantitativos" for course in selected_courses) and not any(course["nombre"] == "Investigación cuantitativa" for course in selected_courses):
         st.warning("Recuerda: 'Investigación cuantitativa' es prerrequisito para 'Métodos y análisis cuantitativos'.")
 
-    # Reporte general de avance
     st.markdown("### Avance Académico")
     st.write(f"**Créditos totales cursados:** {total_credits}")
     st.write(f"**Según el currículo antiguo:** Has completado {old_semestre_actual} semestre(s) (16 créditos por semestre).")
@@ -220,7 +191,7 @@ if st.button("Verificar Elegibilidad"):
         for razon in razones_no_elegible:
             st.write(f"- {razon}")
 
-    # Convalidaciones
+    # Convalidaciones y cursos pendientes (lógica similar a tu versión original)
     convalidados = []
     for course in selected_courses:
         nombre = course["nombre"]
@@ -239,7 +210,6 @@ if st.button("Verificar Elegibilidad"):
     else:
         st.write("No se han identificado convalidaciones directas.")
 
-    # Cálculo de materias pendientes
     pending_courses = [course for course in curriculum_nuevo if course["nombre"] not in convalidados]
     st.markdown("### Cursos pendientes por cursar en el currículo nuevo:")
     if pending_courses:
@@ -252,14 +222,12 @@ if st.button("Verificar Elegibilidad"):
                 st.write(f"- {course['nombre']} ({course['creditos']} créditos)")
     else:
         st.write("No hay cursos pendientes. ¡Felicidades!")
-
+        
     total_new_credits = sum(course["creditos"] for course in curriculum_nuevo)
     convalidados_credits = sum(course["creditos"] for course in curriculum_nuevo if course["nombre"] in convalidados)
     creditos_pendientes = total_new_credits - convalidados_credits
-
     st.write(f"**Créditos pendientes por completar en el currículo nuevo:** {creditos_pendientes}")
 
-    # Recomendaciones para el próximo semestre
     st.markdown("### Recomendaciones para el próximo semestre")
     if pending_courses:
         pending_sorted = sorted(pending_courses, key=lambda x: x["semestre"])
@@ -276,30 +244,23 @@ if st.button("Verificar Elegibilidad"):
     else:
         st.write("No hay recomendaciones; ya estás al día con el currículo nuevo.")
 
-    # Nota final y recomendaciones de asesoría
     nota = ("Si la información proporcionada no se ajusta a tu situación o consideras que falta algún dato, "
             "te recomendamos buscar asesoría personalizada.")
     if doble_programa:
         nota += " Además, al ser estudiante de doble programa, es importante que recibas asesoría especializada."
     st.info(nota)
 
-    # --- Guardar en la base de datos la query y el resultado ---
-    conn = sqlite3.connect("queries.db")
-    cursor = conn.cursor()
-    cursor.execute('''
-    INSERT INTO queries (timestamp, english_level, english_homologado, semestre_actual, doble_programa, selected_courses, total_credits, elegibilidad)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-    ''', (
-        datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-        english_level,
-        english_homologado,
-        semestre_actual,
-        doble_programa,
-        ", ".join(course["nombre"] for course in selected_courses),
-        total_credits,
-        "Elegible" if elegible else "No elegible"
-    ))
-    conn.commit()
-    conn.close()
-
+    # --- Guardar la consulta en Supabase ---
+    data = {
+        "timestamp": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        "english_level": english_level,
+        "english_homologado": english_homologado,
+        "semestre_actual": semestre_actual,
+        "doble_programa": doble_programa,
+        "selected_courses": ", ".join(course["nombre"] for course in selected_courses),
+        "total_credits": total_credits,
+        "elegibilidad": "Elegible" if elegible else "No elegible"
+    }
+    response = supabase.table("queries").insert(data).execute()
+    st.write("Consulta guardada en la base de datos:", response)
 
