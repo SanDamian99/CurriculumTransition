@@ -49,7 +49,7 @@ curriculum_nuevo = [
     {"nombre": "Ingles nivel 3", "semestre": 2, "creditos": 3, "prerrequisitos": [], "importancia": 3},
     {"nombre": "Competencias básicas digitales", "semestre": 2, "creditos": 3, "prerrequisitos": [], "importancia": 3},
     {"nombre": "Pensamiento y Lenguaje", "semestre": 2, "creditos": 3, "prerrequisitos": [], "importancia": 3},
-    {"nombre": "Investigación cuantitativa", "semestre": 2, "creditos": 2, "prerrequisitos": [], "importancia": 3},
+    {"nombre": "Investigación cuantitativa", "semestre": 2, "creditos": 2, "prerrequisitos": ["Introducción a la investigación en psicología"], "importancia": 4},
     {"nombre": "Funciones Ejecutivas y Cognición Social", "semestre": 2, "creditos": 3, "prerrequisitos": [], "importancia": 3},
     {"nombre": "Modelos de Aprendizaje", "semestre": 2, "creditos": 2, "prerrequisitos": [], "importancia": 3},
     {"nombre": "Core, Curriculum persona y cultura II", "semestre": 3, "creditos": 2, "prerrequisitos": [], "importancia": 3},
