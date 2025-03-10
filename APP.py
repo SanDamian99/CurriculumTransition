@@ -186,7 +186,7 @@ convalidaciones = {
     "Proyecto en psicología": "Proyecto en Psicología I",
     "Práctica en psicología": "Práctica en Psicología I",
     "Psicología Social (Laboratorio x1)": "Psicología social",
-    "Psicología Organizacional (Laboratorio x1)":"Psicología organizacional"
+    "Psicología Organizacional (Laboratorio x1)":"Psicología organizacional",
     
     # Mapeos a Electivas:
     "Escuela Psicológica I": "Electivas",
