@@ -84,7 +84,7 @@ curriculum_antiguo = [
 curriculum_nuevo = [
     # 1° semestre
     {"nombre": "Competencias idiomáticas básicas", "semestre": 1, "creditos": 2, "prerrequisitos": [], "importancia": 3},
-    {"nombre": "inglés 2", "semestre": 1, "creditos": 3, "prerrequisitos": [], "importancia": 3},
+    {"nombre": "Inglés 2", "semestre": 1, "creditos": 3, "prerrequisitos": [], "importancia": 3},
     {"nombre": "Introducción a la investigación", "semestre": 1, "creditos": 3, "prerrequisitos": [], "importancia": 3},
     {"nombre": "Percepción y Atención", "semestre": 1, "creditos": 3, "prerrequisitos": [], "importancia": 3},
     {"nombre": "Memoria y Aprendizaje", "semestre": 1, "creditos": 3, "prerrequisitos": [], "importancia": 3},
@@ -92,7 +92,7 @@ curriculum_nuevo = [
     {"nombre": "Electivas", "semestre": 1, "creditos": 1, "prerrequisitos": [], "importancia": 3},
     # 2° semestre
     {"nombre": "Core, Curriculum persona y cultura 1", "semestre": 2, "creditos": 2, "prerrequisitos": [], "importancia": 3},
-    {"nombre": "inglés 3", "semestre": 2, "creditos": 3, "prerrequisitos": [], "importancia": 3},
+    {"nombre": "Inglés 3", "semestre": 2, "creditos": 3, "prerrequisitos": [], "importancia": 3},
     {"nombre": "Competencias básicas digitales", "semestre": 2, "creditos": 3, "prerrequisitos": [], "importancia": 3},
     {"nombre": "Pensamiento y Lenguaje", "semestre": 2, "creditos": 3, "prerrequisitos": [], "importancia": 3},
     {"nombre": "Investigación cuantitativa", "semestre": 2, "creditos": 2, "prerrequisitos": [], "importancia": 4},
@@ -152,32 +152,32 @@ convalidaciones = {
     "Historia y fundamentos de la psicología": "Historia y fundamentos de la psicología",  # (Ajuste de créditos: 2 → 3)
     
     # Convalidaciones directas (nombres idénticos o casi, ajustando mayúsculas/acento según el plan nuevo):
-    "Inglés nivel 2": "inglés 2",
+    "Inglés nivel 2": "Inglés 2",
     "Competencias idiomáticas básicas": "Competencias idiomáticas básicas",
     "Introducción a la Investigación en Psicología": "Introducción a la investigación",
-    "Core, Curriculum persona y cultura I": "Core, Curriculum persona y cultura 1",
-    "inglés nivel 3": "inglés 3",
+    "Core Curriculum persona y cultura I": "Core, Curriculum persona y cultura 1",
+    "Inglés nivel 3": "Inglés 3",
     "Competencias básicas digitales": "Competencias básicas digitales",
     "Pensamiento y Lenguaje": "Pensamiento y Lenguaje",
     "Investigación cuantitativa": "Investigación cuantitativa",
     "Funciones Ejecutivas y Cognición Social": "Neurociencias",  # Según mapeo particular
     "Neurociencias": "Funciones Ejecutivas y Cognición Social",  # Mapeo recíproco según se requiera
-    "Core, Curriculum persona y cultura II": "Core, Curriculum persona y cultura 2",
+    "Core Curriculum persona y cultura II": "Core, Curriculum persona y cultura 2",
     "Inglés nivel 4": "Inglés nivel 4",
     "Psicología del desarrollo": "Psicología del desarrollo",
     "Métodos y análisis cuantitativos": "Métodos y análisis cuantitativos",
-    "inglés nivel 5": "Inglés Nivel 5",
-    "Core, Curriculum persona y cultura III": "Core, Curriculum persona y cultura 3",
+    "Inglés nivel 5": "Inglés Nivel 5",
+    "Core Curriculum persona y cultura III": "Core, Curriculum persona y cultura 3",
     "Investigación cualitativa": "Investigación cualitativa",
     "Psicopatología": "Psicopatología",
     "Medición y evaluación del comportamiento": "Medición y evaluación del comportamiento",
     "inglés nivel 6": "Inglés Nivel 6",
-    "Core, Curriculum persona y cultura IV": "Core, Curriculum persona y cultura 4",
+    "Core Curriculum persona y cultura IV": "Core, Curriculum persona y cultura 4",
     "Métodos y análisis cualitativos": "Métodos y análisis cualitativos",
     "Psicología clínica": "Psicología Clínica",
     "Micro práctica 2": "Micro práctica 2",
-    "inglés nivel 7": "Inglés Nivel 7",
-    "Core, Curriculum persona y cultura V": "Core, Curriculum persona y cultura 5",
+    "Inglés nivel 7": "Inglés Nivel 7",
+    "Core Curriculum persona y cultura V": "Core, Curriculum persona y cultura 5",
     "Psicología organizacional": "Psicología Organizacional (laboratorio x1)",
     "Psicología educativa": "Psicología Educativa",
     "Micro práctica 3": "Micro práctica 3",
@@ -185,6 +185,8 @@ convalidaciones = {
     "Práctica formativa en Psicología clínica y de la Salud": "Práctica formativa en Psicología Clínica y de la Salud",
     "Proyecto en psicología": "Proyecto en Psicología I",
     "Práctica en psicología": "Práctica en Psicología I",
+    "Psicología Social (Laboratorio x1)": "Psicología social",
+    "Psicología Organizacional (Laboratorio x1)":"Psicología organizacional"
     
     # Mapeos a Electivas:
     "Escuela Psicológica I": "Electivas",
@@ -200,7 +202,7 @@ convalidaciones = {
     "Electiva General II": "Electivas",
     
     # Otras convalidaciones especiales:
-    "Problemas sociales contemporaneos": "Pensamiento social contemporaneo",
+    "Pensamiento Social Contemporáneo": "Problemas sociales contemporáneos",
     "Psicometría (Laboratorio x1)": "Medición y evaluación del comportamiento"
 }
 
