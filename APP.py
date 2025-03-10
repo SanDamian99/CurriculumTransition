@@ -219,7 +219,7 @@ st.markdown(
     - **Microprácticas:**  
       Se deben cursar de forma individual; **no se pueden ver dos microprácticas en un mismo semestre**.  
       A mayor avance en el plan, la incorporación de microprácticas se vuelve más problemática para realizar el cambio curricular.
-      Por ello, esta aplicación prioriza la asignatura de Micropractica en las recomendaciones, e incluso sugiere realizarla en intersemestral cuando corresponda.
+      Por ello, esta aplicación prioriza la asignatura de Micropráctica en las recomendaciones e incluso sugiere realizarla en intersemestral cuando corresponda.
 
     - La aplicación te ayudará a determinar si eres elegible para el cambio curricular, considerando que en el nuevo plan se requieren ciertos créditos mínimos y una correcta convalidación de asignaturas.
     
@@ -241,10 +241,10 @@ english_level = st.number_input("Nivel de Inglés (1-7)", min_value=1, max_value
 english_homologado = st.checkbox("He homologado inglés")
 doble_programa = st.checkbox("¿Eres estudiante de doble programa?")
 
-# Verificación del nivel de inglés mínimo
+# Verificar nivel de inglés mínimo
 if english_level < 2:
     st.error("El nivel mínimo de inglés requerido es 2. Actualmente indicas nivel 1, por lo que debes cursar 3 créditos de inglés adicionales.")
-    
+
 # ===============================
 # Selección de materias aprobadas/cursadas
 # ===============================
@@ -260,7 +260,7 @@ for sem in sorted(courses_by_semester.keys()):
     st.subheader(f"Semestre {sem}")
     for course in courses_by_semester[sem]:
         key_course = f"{course['nombre']}_old"
-        # Si es una asignatura de inglés y se homologó, se marca automáticamente y se deshabilita
+        # Si es asignatura de inglés y se homologó, se marca automáticamente y se deshabilita
         if english_homologado and "Inglés" in course["nombre"]:
             checked = st.checkbox(course["nombre"], key=key_course, value=True, disabled=True)
         else:
@@ -278,76 +278,72 @@ if st.checkbox("¿Desea agregar un curso adicional 'Otro'?"):
 # Lógica de Cálculo, Convalidaciones y Recomendaciones
 # ===============================
 if st.button("Verificar Elegibilidad"):
-    # Calcular créditos totales (garantizando que los créditos de inglés se cuenten una sola vez)
+    # Calcular créditos totales (se cuenta cada curso solo una vez; ajuste especial para Historia y Fundamentos)
     total_credits = 0
     for course in selected_courses:
-        # Ajuste especial: "Historia y Fundamentos de la Psicología" se cuentan como 3 créditos en lugar de 2
         if course["nombre"] == "Historia y Fundamentos de la Psicología":
             total_credits += 3
         else:
             total_credits += course["creditos"]
 
-    # Determinar límite de créditos permitidos (48 o 64 según homologación o nivel de inglés)
-    credit_limit = 64 if english_homologado or english_level >= 5 else 48
-
-    # Verificar materias de semestres avanzados (más allá del 3° semestre del currículo antiguo)
-    advanced_courses = [course for course in selected_courses if course["semestre"] >= 4]
-    elegible = True
-    razones_no_elegible = []
-
-    if total_credits > credit_limit:
+    # Si el estudiante tiene 73 o más créditos, no es posible el cambio (equivalente a sexto semestre del nuevo plan)
+    if total_credits >= 73:
         elegible = False
-        razones_no_elegible.append(
-            f"Has superado el límite de créditos permitidos para la transición ({total_credits} créditos, límite {credit_limit})."
-        )
+        razones_no_elegible = [f"Tienes {total_credits} créditos, lo que excede el máximo permitido para realizar el cambio curricular."]
+    else:
+        elegible = True
+        razones_no_elegible = []
+
+    # Regla de materias avanzadas: si se cursaron materias del 4° semestre o superiores, no es elegible
+    advanced_courses = [course for course in selected_courses if course["semestre"] >= 4]
     if advanced_courses:
         elegible = False
         nombres_advanced = ", ".join(course["nombre"] for course in advanced_courses)
-        razones_no_elegible.append(
-            f"Has cursado materias de semestres avanzados (4° o superior) del currículo antiguo: {nombres_advanced}."
-        )
+        razones_no_elegible.append(f"Has cursado materias de semestres avanzados (4° o superior): {nombres_advanced}.")
 
-    # Cálculo del semestre en el plan nuevo (cada semestre equivale a 18 créditos)
-    nuevo_semestre = 1 if total_credits < 15 else total_credits // 18 + (1 if total_credits % 18 != 0 else 0)
-    
-    # Recomendaciones:
-    # Se prioriza la inscripción de la Micropractica. Si es pertinente (según el total de créditos),
-    # se sugiere realizarla en intersemestral.
+    # Cálculo del semestre en el plan nuevo (cada 18 créditos completados corresponde a un semestre)
+    nuevo_semestre = 1 if total_credits < 18 else total_credits // 18 + (1 if total_credits % 18 != 0 else 0)
+    # Calcular créditos faltantes para completar el semestre actual
+    faltan_creditos = 18 - (total_credits % 18) if total_credits % 18 != 0 else 0
+
+    # Elaborar recomendaciones según rangos de créditos:
+    # (Se asume que el cálculo del nuevo semestre se basa en múltiplos de 18)
     recomendacion = ""
     if total_credits % 18 in range(15, 18):
-        recomendacion += "Tienes créditos entre 15 y 17; se sugiere un intersemestral para completar los 18 créditos.\n"
+        recomendacion += "Tienes entre 15 y 17 créditos en el semestre actual; se sugiere realizar intersemestral para completar los 18 créditos.\n"
     if total_credits in range(31, 36):
         recomendacion += "En segundo semestre, si tienes entre 31 y 35 créditos, se recomienda realizar un intersemestral para alcanzar 36 créditos.\n"
     if total_credits in range(48, 54):
+        # En tercer semestre, se recomienda intersemestral para llegar a 54 créditos y pasar a cuarto.
         if english_level == 4:
-            recomendacion += "Con nivel 4 de inglés y entre 48 y 53 créditos, ya cuentas con 6 créditos de inglés; INSCRIBE Micropractica 1.\n"
+            recomendacion += "Con nivel 4 de inglés y entre 48 y 53 créditos, se suma automáticamente 6 créditos de inglés; INSCRIBE Micropractica 1.\n"
         else:
-            recomendacion += "En tercer semestre, si tienes entre 48 y 53 créditos, se recomienda realizar intersemestral para alcanzar 54 créditos y pasar a cuarto semestre, e INSCRIBIR Micropractica 1.\n"
+            recomendacion += "En tercer semestre, si tienes entre 48 y 53 créditos, se recomienda realizar intersemestral para alcanzar 54 créditos y pasar a cuarto semestre, e INSCRIBE Micropractica 1.\n"
     if total_credits in range(37, 48):
-        recomendacion += f"Tienes entre 37 y 47 créditos; te recomendamos buscar asesoría personalizada ya que aún tienes oportunidad, [solicita cita aquí]({FORMS_LINK}).\n"
+        recomendacion += f"Tienes entre 37 y 47 créditos; se recomienda buscar asesoría personalizada ya que aún tienes oportunidad, [solicita cita aquí]({FORMS_LINK}).\n"
     if total_credits in range(64, 72):
-        recomendacion += f"Con 64 a 71 créditos, te recomendamos asesoría personalizada para definir la inscripción de Micropractica y continuar el plan nuevo, [solicita cita aquí]({FORMS_LINK}).\n"
-    if total_credits >= 73:
-        recomendacion += "Con más de 73 créditos, no es posible el cambio curricular, ya que correspondería al sexto semestre del plan nuevo (se requerirían dos Micropracticas).\n"
-    
-    # Priorizar la Micropractica: se revisa si entre las asignaturas pendientes del nuevo plan existe alguna Micropractica.
-    # Si no se encuentra y el total de créditos sugiere avanzar, se añade esta recomendación al inicio.
-    pending_micro = [course for course in curriculum_nuevo if "micropractica" in course["nombre"].lower() or "micro práctica" in course["nombre"].lower()]
-    # Se supone que la lista de "convalidados" se genera posteriormente; aquí se verifica si en el nuevo plan ya se incluyó Micropractica.
-    micro_in_convalidados = False  # Se actualizará más adelante según convalidaciones
-    if not micro_in_convalidados and pending_micro:
-        recomendacion = "Prioridad: INSCRIBE la asignatura de Micropractica. " + recomendacion
+        recomendacion += f"Con 64 a 71 créditos, se recomienda asesoría personalizada para definir la inscripción de Micropractica y continuar al siguiente semestre, [solicita cita aquí]({FORMS_LINK}).\n"
 
-    if any(course["nombre"] == "Métodos y Análisis Cuantitativos" for course in selected_courses) and not any(course["nombre"] == "Investigación Cuantitativa" for course in selected_courses):
-        st.warning("Recuerda: 'Investigación Cuantitativa' es prerrequisito para 'Métodos y Análisis Cuantitativos'.")
+    # Priorizar la recomendación de Micropractica:
+    # Se recomienda una única Micropractica (ya sea de forma directa o intersemestral) si el total de créditos sugiere avanzar.
+    # Buscamos en el currículo nuevo la asignatura de Micropractica.
+    micropractica_recomendada = None
+    for course in curriculum_nuevo:
+        nombre_lower = course["nombre"].lower()
+        if "micropractica" in nombre_lower or "micro práctica" in nombre_lower:
+            micropractica_recomendada = course["nombre"]
+            break  # Se recomienda solo una
 
+    if micropractica_recomendada:
+        recomendacion = f"Prioridad: INSCRIBE {micropractica_recomendada}. " + recomendacion
+
+    # Mostrar información de avance
     st.markdown("### Avance Académico")
-    st.write(f"**Créditos totales cursados (con ajuste en Historia y Fundamentos):** {total_credits}")
-    st.write(f"**Según el plan nuevo:** Estarías en el semestre {nuevo_semestre} (18 créditos por semestre).")
-    if total_credits % 18 > 0 and total_credits % 18 < 18:
-        st.write(f"Te faltan **{18 - (total_credits % 18)}** crédito(s) para completar el semestre actual. {recomendacion}")
-    else:
-        st.write(recomendacion)
+    st.write(f"**Créditos totales cursados:** {total_credits}")
+    st.write(f"**Estarías en el semestre {nuevo_semestre} del nuevo plan (18 créditos por semestre).**")
+    if faltan_creditos > 0:
+        st.write(f"Te faltan **{faltan_creditos}** crédito(s) para completar el semestre actual.")
+    st.write(recomendacion)
 
     if elegible:
         st.success("Elegible para el cambio curricular: Sí")
@@ -357,7 +353,7 @@ if st.button("Verificar Elegibilidad"):
         for razon in razones_no_elegible:
             st.write(f"- {razon}")
 
-    # Proceso de convalidación de asignaturas (se asume que "convalidaciones" y "curriculum_nuevo" están definidos externamente)
+    # Proceso de convalidación de asignaturas (se asume que "convalidaciones" y "curriculum_nuevo" están cargados)
     convalidados = []
     for course in selected_courses:
         nombre = course["nombre"]
@@ -380,6 +376,7 @@ if st.button("Verificar Elegibilidad"):
     else:
         st.write("No se han identificado convalidaciones directas.")
 
+    # Mostrar cursos pendientes por cursar en el currículo nuevo
     pending_courses = [course for course in curriculum_nuevo if course["nombre"] not in convalidados]
     st.markdown("### Cursos pendientes por cursar en el currículo nuevo:")
     if pending_courses:
@@ -398,19 +395,17 @@ if st.button("Verificar Elegibilidad"):
     creditos_pendientes = total_new_credits - convalidados_credits
     st.write(f"**Créditos pendientes por completar en el currículo nuevo:** {creditos_pendientes}")
 
-    # Recomendaciones para el próximo semestre: se priorizan las asignaturas de menor semestre y la Micropractica.
+    # Recomendaciones para el próximo semestre: priorizando materias de semestres bajos
     st.markdown("### Recomendaciones para el próximo semestre")
-    pending_micropracticas = [course for course in pending_courses if "micropractica" in course["nombre"].lower() or "micro práctica" in course["nombre"].lower()]
-    pending_otros = [course for course in pending_courses if course not in pending_micropracticas]
-    pending_sorted = sorted(pending_micropracticas, key=lambda x: x["semestre"]) + sorted(pending_otros, key=lambda x: x["semestre"])
-    
+    # Ordenar primero las asignaturas pendientes de semestres más bajos
+    pending_sorted = sorted(pending_courses, key=lambda x: x["semestre"])
     recommended = []
     total_rec = 0
     for course in pending_sorted:
         if total_rec + course["creditos"] <= 18:
             recommended.append(course)
             total_rec += course["creditos"]
-    st.write("Se recomienda inscribir las siguientes materias para alcanzar hasta 18 créditos, **priorizando la Micropractica**:")
+    st.write("Se recomienda inscribir las siguientes materias (priorizando las de semestres más bajos), para alcanzar hasta 18 créditos:")
     for course in recommended:
         st.write(f"- {course['nombre']} (Semestre {course['semestre']}, {course['creditos']} créditos)")
     st.write(f"**Total de créditos recomendados:** {total_rec}")
