@@ -84,15 +84,15 @@ curriculum_antiguo = [
 curriculum_nuevo = [
     # 1° semestre
     {"nombre": "Competencias idiomáticas básicas", "semestre": 1, "creditos": 2, "prerrequisitos": [], "importancia": 3},
-    {"nombre": "Ingles 2", "semestre": 1, "creditos": 3, "prerrequisitos": [], "importancia": 3},
+    {"nombre": "inglés 2", "semestre": 1, "creditos": 3, "prerrequisitos": [], "importancia": 3},
     {"nombre": "Introducción a la investigación", "semestre": 1, "creditos": 3, "prerrequisitos": [], "importancia": 3},
     {"nombre": "Percepción y Atención", "semestre": 1, "creditos": 3, "prerrequisitos": [], "importancia": 3},
-    {"nombre": "Memoría y Aprendizaje", "semestre": 1, "creditos": 3, "prerrequisitos": [], "importancia": 3},
+    {"nombre": "Memoria y Aprendizaje", "semestre": 1, "creditos": 3, "prerrequisitos": [], "importancia": 3},
     {"nombre": "Historia y fundamentos de la psicología", "semestre": 1, "creditos": 3, "prerrequisitos": [], "importancia": 3},
     {"nombre": "Electivas", "semestre": 1, "creditos": 1, "prerrequisitos": [], "importancia": 3},
     # 2° semestre
     {"nombre": "Core, Curriculum persona y cultura 1", "semestre": 2, "creditos": 2, "prerrequisitos": [], "importancia": 3},
-    {"nombre": "Ingles 3", "semestre": 2, "creditos": 3, "prerrequisitos": [], "importancia": 3},
+    {"nombre": "inglés 3", "semestre": 2, "creditos": 3, "prerrequisitos": [], "importancia": 3},
     {"nombre": "Competencias básicas digitales", "semestre": 2, "creditos": 3, "prerrequisitos": [], "importancia": 3},
     {"nombre": "Pensamiento y Lenguaje", "semestre": 2, "creditos": 3, "prerrequisitos": [], "importancia": 3},
     {"nombre": "Investigación cuantitativa", "semestre": 2, "creditos": 2, "prerrequisitos": [], "importancia": 4},
@@ -104,10 +104,10 @@ curriculum_nuevo = [
     {"nombre": "Problemas sociales contemporáneos", "semestre": 3, "creditos": 2, "prerrequisitos": [], "importancia": 3},
     {"nombre": "Psicología del desarrollo", "semestre": 3, "creditos": 3, "prerrequisitos": [], "importancia": 3},
     {"nombre": "Micropractica 1", "semestre": 3, "creditos": 3, "prerrequisitos": [], "importancia": 5},
-    {"nombre": "Métodos y análisis cuantitativos", "semestre": 3, "creditos": 2, "prerrequisitos": ["Investigación cuantitativa", "Ingles nivel 4", "Core, Curriculum persona y cultura 2"], "importancia": 4},
+    {"nombre": "Métodos y análisis cuantitativos", "semestre": 3, "creditos": 2, "prerrequisitos": ["Investigación cuantitativa", "inglés nivel 4", "Core, Curriculum persona y cultura 2"], "importancia": 4},
     {"nombre": "Electivas", "semestre": 3, "creditos": 3, "prerrequisitos": [], "importancia": 3},
     # 4° semestre
-    {"nombre": "Ingles nivel 5", "semestre": 4, "creditos": 3, "prerrequisitos": ["Inglés nivel 4"], "importancia": 3},
+    {"nombre": "inglés nivel 5", "semestre": 4, "creditos": 3, "prerrequisitos": ["Inglés nivel 4"], "importancia": 3},
     {"nombre": "Core, Curriculum persona y cultura 3", "semestre": 4, "creditos": 2, "prerrequisitos": ["Core, Curriculum persona y cultura 2"], "importancia": 4},
     {"nombre": "Ética profesional", "semestre": 4, "creditos": 2, "prerrequisitos": [], "importancia": 3},
     {"nombre": "Investigación cualitativa", "semestre": 4, "creditos": 2, "prerrequisitos": [], "importancia": 4},
@@ -115,7 +115,7 @@ curriculum_nuevo = [
     {"nombre": "Medición y evaluación del comportamiento", "semestre": 4, "creditos": 3, "prerrequisitos": [], "importancia": 3},
     {"nombre": "Electivas", "semestre": 4, "creditos": 3, "prerrequisitos": [], "importancia": 3},
     # 5° semestre
-    {"nombre": "Ingles nivel 6", "semestre": 5, "creditos": 3, "prerrequisitos": ["Ingles nivel 5"], "importancia": 3},
+    {"nombre": "inglés nivel 6", "semestre": 5, "creditos": 3, "prerrequisitos": ["inglés nivel 5"], "importancia": 3},
     {"nombre": "Core, Curriculum persona y cultura 4", "semestre": 5, "creditos": 2, "prerrequisitos": ["Core, Curriculum persona y cultura 3"], "importancia": 3},
     {"nombre": "Psicología social", "semestre": 5, "creditos": 3, "prerrequisitos": [], "importancia": 3},
     {"nombre": "Métodos y análisis cualitativos", "semestre": 5, "creditos": 2, "prerrequisitos": ["Investigación cualitativa"], "importancia": 3},
@@ -123,7 +123,7 @@ curriculum_nuevo = [
     {"nombre": "Micro práctica 2", "semestre": 5, "creditos": 3, "prerrequisitos": [], "importancia": 5},
     {"nombre": "Electivas", "semestre": 5, "creditos": 3, "prerrequisitos": [], "importancia": 3},
     # 6° semestre
-    {"nombre": "Ingles nivel 7", "semestre": 6, "creditos": 3, "prerrequisitos": ["Ingles nivel 6"], "importancia": 3},
+    {"nombre": "inglés nivel 7", "semestre": 6, "creditos": 3, "prerrequisitos": ["inglés nivel 6"], "importancia": 3},
     {"nombre": "Core, Curriculum persona y cultura 5", "semestre": 6, "creditos": 3, "prerrequisitos": ["Core, Curriculum persona y cultura 4"], "importancia": 3},
     {"nombre": "Psicología organizacional", "semestre": 6, "creditos": 3, "prerrequisitos": [], "importancia": 3},
     {"nombre": "Psicología educativa", "semestre": 6, "creditos": 3, "prerrequisitos": [], "importancia": 3},
@@ -152,34 +152,32 @@ convalidaciones = {
     "Historia y fundamentos de la psicología": "Historia y fundamentos de la psicología",  # (Ajuste de créditos: 2 → 3)
     
     # Convalidaciones directas (nombres idénticos o casi, ajustando mayúsculas/acento según el plan nuevo):
-    "Ingles nivel 2": "Ingles nivel 2",
-    "Ingles 2": "Inglés Nivel 2",
+    "Inglés nivel 2": "inglés 2",
     "Competencias idiomáticas básicas": "Competencias idiomáticas básicas",
-    "Introducción a la investigación": "Introducción a la investigación en psicología",
-    "Introducción a la investigación en psicología": "Introducción a la investigación en psicología",
-    "Core, Curriculum persona y cultura 1": "Core, Curriculum persona y cultura I",
-    "Ingles nivel 3": "Ingles nivel 3",
+    "Introducción a la Investigación en Psicología": "Introducción a la investigación",
+    "Core, Curriculum persona y cultura I": "Core, Curriculum persona y cultura 1",
+    "inglés nivel 3": "inglés 3",
     "Competencias básicas digitales": "Competencias básicas digitales",
     "Pensamiento y Lenguaje": "Pensamiento y Lenguaje",
     "Investigación cuantitativa": "Investigación cuantitativa",
     "Funciones Ejecutivas y Cognición Social": "Neurociencias",  # Según mapeo particular
     "Neurociencias": "Funciones Ejecutivas y Cognición Social",  # Mapeo recíproco según se requiera
-    "Core, Curriculum persona y cultura II": "Core, Curriculum persona y cultura II",
+    "Core, Curriculum persona y cultura II": "Core, Curriculum persona y cultura 2",
     "Inglés nivel 4": "Inglés nivel 4",
     "Psicología del desarrollo": "Psicología del desarrollo",
     "Métodos y análisis cuantitativos": "Métodos y análisis cuantitativos",
-    "Ingles nivel 5": "Inglés Nivel 5",
-    "Core, Curriculum persona y cultura 3": "Core, Curriculum persona y cultura III",
+    "inglés nivel 5": "Inglés Nivel 5",
+    "Core, Curriculum persona y cultura III": "Core, Curriculum persona y cultura 3",
     "Investigación cualitativa": "Investigación cualitativa",
     "Psicopatología": "Psicopatología",
     "Medición y evaluación del comportamiento": "Medición y evaluación del comportamiento",
-    "Ingles nivel 6": "Inglés Nivel 6",
-    "Core, Curriculum persona y cultura 4": "Core, Curriculum persona y cultura IV",
+    "inglés nivel 6": "Inglés Nivel 6",
+    "Core, Curriculum persona y cultura IV": "Core, Curriculum persona y cultura 4",
     "Métodos y análisis cualitativos": "Métodos y análisis cualitativos",
     "Psicología clínica": "Psicología Clínica",
     "Micro práctica 2": "Micro práctica 2",
-    "Ingles nivel 7": "Inglés Nivel 7",
-    "Core, Curriculum persona y cultura 5": "Core, Curriculum persona y cultura V",
+    "inglés nivel 7": "Inglés Nivel 7",
+    "Core, Curriculum persona y cultura V": "Core, Curriculum persona y cultura 5",
     "Psicología organizacional": "Psicología Organizacional (laboratorio x1)",
     "Psicología educativa": "Psicología Educativa",
     "Micro práctica 3": "Micro práctica 3",
@@ -281,7 +279,7 @@ for course in curriculum_antiguo:
 
 # Primero, para las asignaturas de inglés, se marcan automáticamente según el nivel ingresado.
 # Se asume que en el currículo antiguo las asignaturas se llaman "Inglés Nivel 2", "Inglés Nivel 3", etc.
-nivel_ingles_automaticos = []
+nivel_inglés_automaticos = []
 for course in curriculum_antiguo:
     if "Inglés Nivel" in course["nombre"]:
         # Extraer el número del nivel, asumiendo que el formato es "Inglés Nivel X"
@@ -290,7 +288,7 @@ for course in curriculum_antiguo:
         except:
             nivel = None
         if nivel is not None and nivel <= english_level:
-            nivel_ingles_automaticos.append(course)
+            nivel_inglés_automaticos.append(course)
 
 # Mostrar los cursos agrupados por semestre y marcar automáticamente los cursos de inglés según nivel
 for sem in sorted(courses_by_semester.keys()):
@@ -298,7 +296,7 @@ for sem in sorted(courses_by_semester.keys()):
     for course in courses_by_semester[sem]:
         key_course = f"{course['nombre']}_old"
         # Si el curso es de inglés y está dentro de los niveles seleccionados o se homologó, se marca automáticamente.
-        if ("Inglés Nivel" in course["nombre"] and course in nivel_ingles_automaticos) or (english_homologado and "Inglés" in course["nombre"]):
+        if ("Inglés Nivel" in course["nombre"] and course in nivel_inglés_automaticos) or (english_homologado and "Inglés" in course["nombre"]):
             checked = st.checkbox(course["nombre"], key=key_course, value=True, disabled=True)
         else:
             checked = st.checkbox(course["nombre"], key=key_course)
