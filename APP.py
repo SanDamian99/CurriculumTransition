@@ -434,4 +434,4 @@ if st.button("Verificar Elegibilidad"):
         "elegibilidad": "Elegible" if elegible else "No elegible"
     }
     response = supabase.table("queries").insert(data).execute()
-    st.write("Consulta guardada en la base de datos:", response)
+    #st.write("Consulta guardada en la base de datos:", response)
