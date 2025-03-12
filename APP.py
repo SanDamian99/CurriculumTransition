@@ -206,31 +206,6 @@ convalidaciones = {
     "Psicometría (Laboratorio x1)": "Medición y evaluación del comportamiento"
 }
 
-
-# ===============================
-# Explicación inicial
-# ===============================
-st.image("logo.png", caption="Facultad de Psicología y Ciencias del Comportamiento", width=200)
-st.title("App de Transición Curricular")
-st.markdown(
-    """
-    ### Instrucciones y Consideraciones Importantes
-
-    - **Microprácticas:**  
-      Se deben cursar de forma individual; **no se pueden ver dos microprácticas en un mismo semestre**.  
-      A mayor avance en el plan, la incorporación de microprácticas se vuelve más problemática para realizar el cambio curricular.
-      Por ello, esta aplicación prioriza la asignatura de Micropráctica en las recomendaciones e incluso sugiere realizarla en intersemestral cuando corresponda.
-
-    - La aplicación te ayudará a determinar si eres elegible para el cambio curricular, considerando que en el nuevo plan se requieren ciertos créditos mínimos y una correcta convalidación de asignaturas.
-    
-    - **Importante sobre el nivel de inglés:**  
-      Se supone que debes tener como mínimo nivel 2 de inglés. Si indicas que tienes nivel 1, se te informará que adeudas 3 créditos de inglés.
-
-    - Si necesitas asesoría personalizada, por favor solicita una cita [aquí]({forms_link}).
-
-    """.replace("{forms_link}", FORMS_LINK)
-)
-
 # ===============================
 # Explicación inicial
 # ===============================
@@ -332,8 +307,10 @@ if st.button("Verificar Elegibilidad"):
         razones_no_elegible = [f"Tienes {total_credits} créditos, lo que excede el máximo permitido (72) para realizar el cambio curricular."]
 
     # Cálculo del semestre en el plan nuevo (cada 18 créditos)
-    nuevo_semestre = 1 if total_credits < 18 else total_credits // 18 + (1 if total_credits % 18 != 0 else 0)
+    # Si un estudiante tiene, por ejemplo, 18 créditos, ya cumplió el primer semestre y está en el segundo.
+    nuevo_semestre = total_credits // 18 + 1
     faltan_creditos = 18 - (total_credits % 18) if total_credits % 18 != 0 else 0
+
 
     # Elaborar recomendaciones según rangos de créditos
     recomendacion = ""
