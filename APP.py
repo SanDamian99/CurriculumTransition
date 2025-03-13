@@ -329,17 +329,21 @@ if verificar:
     if elegible:
         # Elaborar recomendaciones usando los créditos totales (justo después del reporte de créditos)
         recomendacion = ""
-        if total_credits in range(15, 18):
+        if total_credits in range(15, 17):
             recomendacion += ("Haz cursado entre 15 y 17 créditos en el semestre actual; se requiere realizar intersemestral para "
                                "completar los 18 créditos y pasar a segundo semestre del plan nuevo.\n")
-        if total_credits in range(31, 36):
+        if total_credits in range(18, 30):
+            recomendacion += ("Haz cursado entre 19 y 30 créditos en el semestre actual; entrarías a un segundo semestre del nuevo programa\n")
+        if total_credits in range(31, 35):
             recomendacion += ("Haz cursado entre 31 y 35 créditos; se recomienda realizar un intersemestral para alcanzar 36 créditos y pasar a tercer semestre del plan nuevo.\n")
+        if total_credits in range(36, 47):
+            recomendacion += ("Haz cursado entre 37 y 47 créditos; pasas a tercer semestre del plan nuevo.\n")
         if total_credits in range(48, 54):
             if nuevo_semestre >= 3:
                 recomendacion += ("Haz cursado entre 48 y 53 créditos; debes INSCRIBIR Micropractica 1 en intersemestral y pasarías a cuarto semestre del plan nuevo.\n")
-        if total_credits in range(37, 48):
-            recomendacion += ("Haz cursado entre 37 y 47 créditos; se recomienda buscar asesoría personalizada y revisar la pieza gráfica.\n")
-        if total_credits in range(64, 73):
+        if total_credits in range(55, 63):
+            recomendacion += ("Haz cursado entre 55 y 63 créditos; entrarías a cuarto semestre del nuevo programa y debes INSCRIBIR Micropractica 1 en intersemestral.\n")
+        if total_credits in range(64, 72):
             recomendacion += ("Haz cursado entre 64 a 72 créditos; debes INSCRIBIR Micropractica 1 en intersemestral y pasarías a quinto semestre.\n")
         
         # Si no se cumple ninguna condición, se imprime un mensaje predeterminado.
