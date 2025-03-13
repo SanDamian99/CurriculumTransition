@@ -275,18 +275,40 @@ if st.checkbox("¿Desea agregar un curso adicional 'Otro'?"):
     selected_courses.append({"nombre": "Otro", "semestre": 0, "creditos": otro_creditos, "prerrequisitos": []})
 
 # ===============================
-# Botón de verificación (al final y alineado a la derecha)
+# Botón de Verificación (al final y alineado a la derecha)
 # ===============================
-col1, col2 = st.columns([3, 1])
-with col2:
-    # El botón se deshabilita si no se ha ingresado el ID de la universidad
-    btn_verificar = st.button("VERIFICAR ELEGIBILIDAD", 
-                              key="verificar", 
-                              help="Haz clic para verificar tu elegibilidad",
-                              disabled=(university_id.strip() == ""))
-    
-if btn_verificar:
+# Agregar estilo CSS para hacer el botón más llamativo
+st.markdown(
+    """
+    <style>
+    div.stButton > button {
+        background-color: #FF4B4B;
+        color: white;
+        font-size: 18px;
+        font-weight: bold;
+        border: none;
+        border-radius: 5px;
+        padding: 10px 20px;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
+# Colocar el botón en columnas para alinearlo a la derecha
+cols = st.columns([3, 1])
+with cols[1]:
+    if university_id.strip() == "":
+        st.info("Por favor, ingresa tu ID universitario para continuar.")
+        verificar = False
+    else:
+        verificar = st.button("VERIFICAR ELEGIBILIDAD", key="verificar", help="Haz clic para verificar tu elegibilidad")
+
+if verificar:
+    # ===============================
     # Lógica de Cálculo, Convalidaciones y Recomendaciones
+    # ===============================
+    # Calcular créditos totales (se considera Historia y Fundamentos con 3 créditos)
     total_credits = 0
     for course in selected_courses:
         if course["nombre"] == "Historia y Fundamentos de la Psicología":
@@ -305,13 +327,40 @@ if btn_verificar:
     st.write(f"**Créditos totales cursados:** {total_credits}")
 
     if elegible:
-        st.success("Elegible para el cambio curricular: Sí")
-    else:
-        st.error(f"No elegible para el cambio curricular: Tienes {total_credits} créditos, lo que supera los 73 permitidos.")
+        # Elaborar recomendaciones usando los créditos totales (no el módulo)
+        recomendacion = ""
+        if total_credits in range(15, 18):
+            recomendacion += ("Haz cursado entre 15 y 17 créditos en el semestre actual; se requiere realizar intersemestral para "
+                               "completar los 18 créditos. Y pasar a segundo semestre del plan nuevo.\n")
+        if total_credits in range(31, 36):
+            recomendacion += ("Haz cursado entre 31 y 35 créditos, se recomienda realizar un intersemestral para alcanzar 36 créditos. "
+                               "Y pasar a tercer semestre del plan nuevo.\n")
+        if total_credits in range(48, 54):
+            if nuevo_semestre >= 3:
+                recomendacion += ("Haz cursado entre 48 y 53 créditos, debes INSCRIBIR Micropractica 1 en intersemestral. "
+                                   "Y pasarías a cuarto semestre del plan nuevo.\n")
+        if total_credits in range(37, 48):
+            recomendacion += ("Haz cursado entre 37 y 47 créditos; se recomienda buscar asesoría personalizada, revisa la pieza gráfica.\n")
+        if total_credits in range(64, 73):
+            recomendacion += ("Haz cursado entre 64 a 72 créditos, debes INSCRIBIR Micropractica 1 en intersemestral. "
+                               "Pasarías a quinto semestre.\n")
 
-    # Solo si el estudiante es elegible se muestran las demás secciones
-    if elegible:
-        # Proceso de convalidación de asignaturas
+        # Se sugiere Micropráctica si el estudiante pasa a tercer semestre o superior
+        if nuevo_semestre >= 3:
+            micropractica_recomendada = None
+            for course in curriculum_nuevo:
+                nombre_lower = course["nombre"].lower()
+                if "micropractica" in nombre_lower or "micro práctica" in nombre_lower:
+                    micropractica_recomendada = course["nombre"]
+                    break
+            if micropractica_recomendada:
+                recomendacion = f"Prioridad: INSCRIBE {micropractica_recomendada}. " + recomendacion
+
+        st.write(recomendacion)
+
+        st.success("Elegible para el cambio curricular: Sí")
+
+        # --- Convalidaciones y mapeo (solo si es elegible)
         convalidados = []
         for course in selected_courses:
             nombre = course["nombre"]
@@ -365,7 +414,9 @@ if btn_verificar:
             st.write(f"- {course['nombre']} (Semestre {course['semestre']}, {course['creditos']} créditos)")
         st.write(f"**Total de créditos recomendados:** {total_rec}")
 
-    # Nota de asesoría y enlace para solicitar cita
+    else:
+        st.error(f"No elegible para el cambio curricular: Tienes {total_credits} créditos, lo que supera los 73 permitidos.")
+
     nota = (
         "Si la información proporcionada no se ajusta a tu situación o consideras que falta algún dato, "
         "te recomendamos buscar asesoría personalizada [solicitando cita aquí]({forms_link})."
