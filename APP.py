@@ -207,35 +207,32 @@ convalidaciones = {
 }
 
 # ===============================
-# Explicación inicial
+# Banner (logo)
 # ===============================
-st.image("logo.png", caption="Facultad de Psicología y Ciencias del Comportamiento", width=200)
+st.image("logo.png", caption="Facultad de Psicología y Ciencias del Comportamiento", use_column_width=True)
+
 st.title("App de Transición Curricular")
 st.markdown(
     """
     ### Instrucciones y Consideraciones Importantes
 
     - La aplicación te ayudará a determinar si eres elegible para el cambio curricular, considerando que en el nuevo plan se requieren ciertos créditos mínimos y una correcta convalidación de asignaturas.
-
-   
+    
     - **Microprácticas:** Se deben cursar de forma individual; **no se pueden ver dos microprácticas en un mismo semestre**.  
-      
-  
-
     """
 )
 
 # ===============================
 # Entrada de datos del estudiante
 # ===============================
-# Solicitar el ID universitario para identificar al estudiante
 university_id = st.text_input("Ingrese su ID universitario", "")
 
 english_level = st.number_input("Indique el Nivel de Inglés (1-7) que está cursando", min_value=1, max_value=7, value=1, step=1)
-english_homologado = st.checkbox("He homologado inglés o ya termine Ingles")
+english_homologado = st.checkbox("He homologado inglés o ya terminé Inglés")
 doble_programa = st.checkbox("¿Eres estudiante de doble programa?")
 
-if english_level < 2:
+# Solo se muestra error si no se homologó y el nivel es menor a 2
+if not english_homologado and english_level < 2:
     st.error("El nivel mínimo de inglés requerido es 2. Actualmente indicas nivel 1, por lo que debes cursar 3 créditos de inglés adicionales.")
 
 # ===============================
@@ -249,33 +246,29 @@ courses_by_semester = {}
 for course in curriculum_antiguo:
     courses_by_semester.setdefault(course["semestre"], []).append(course)
 
-# Primero, para las asignaturas de inglés, se marcan automáticamente según el nivel ingresado.
-# Se asume que en el currículo antiguo las asignaturas se llaman "Inglés Nivel 2", "Inglés Nivel 3", etc.
-nivel_inglés_automaticos = []
+# Seleccionar asignaturas de inglés automáticamente según nivel
+nivel_ingles_automaticos = []
 for course in curriculum_antiguo:
     if "Inglés Nivel" in course["nombre"]:
-        # Extraer el número del nivel, asumiendo que el formato es "Inglés Nivel X"
         try:
             nivel = int(course["nombre"].split("Nivel")[1])
         except:
             nivel = None
         if nivel is not None and nivel <= english_level:
-            nivel_inglés_automaticos.append(course)
+            nivel_ingles_automaticos.append(course)
 
-# Mostrar los cursos agrupados por semestre y marcar automáticamente los cursos de inglés según nivel
 for sem in sorted(courses_by_semester.keys()):
     st.subheader(f"Semestre {sem}")
     for course in courses_by_semester[sem]:
         key_course = f"{course['nombre']}_old"
-        # Si el curso es de inglés y está dentro de los niveles seleccionados o se homologó, se marca automáticamente.
-        if ("Inglés Nivel" in course["nombre"] and course in nivel_inglés_automaticos) or (english_homologado and "Inglés" in course["nombre"]):
+        if (("Inglés Nivel" in course["nombre"] and course in nivel_ingles_automaticos)
+             or (english_homologado and "Inglés" in course["nombre"])):
             checked = st.checkbox(course["nombre"], key=key_course, value=True, disabled=True)
         else:
             checked = st.checkbox(course["nombre"], key=key_course)
         if checked and course not in selected_courses:
             selected_courses.append(course)
 
-# Opción para agregar curso adicional "Otro"
 st.subheader("Agregar curso adicional 'Otro'")
 if st.checkbox("¿Desea agregar un curso adicional 'Otro'?"):
     otro_creditos = st.number_input("Indica la cantidad de créditos para el curso 'Otro'", min_value=1, value=1, step=1, key="otro_creditos")
@@ -284,8 +277,9 @@ if st.checkbox("¿Desea agregar un curso adicional 'Otro'?"):
 # ===============================
 # Lógica de Cálculo, Convalidaciones y Recomendaciones
 # ===============================
-if st.button("Verificar Elegibilidad"):
-    # Calcular créditos totales (contando cada curso solo una vez y ajustando Historia y Fundamentos)
+# Se ubica el botón de verificación en la barra lateral para mayor visibilidad
+if st.sidebar.button("VERIFICAR ELEGIBILIDAD", key="verificar", help="Haz clic para verificar tu elegibilidad"):
+    # Calcular créditos totales (se considera Historia y Fundamentos con 3 créditos)
     total_credits = 0
     for course in selected_courses:
         if course["nombre"] == "Historia y Fundamentos de la Psicología":
@@ -293,41 +287,36 @@ if st.button("Verificar Elegibilidad"):
         else:
             total_credits += course["creditos"]
 
-    # Usamos 72 créditos como límite para ser elegible (todos con menos de 72 pueden cambiar)
-    if total_credits < 72:
+    # Ajuste de elegibilidad: elegible solo si tiene 73 créditos o menos
+    if total_credits <= 73:
         elegible = True
-        razones_no_elegible = []
     else:
         elegible = False
-        razones_no_elegible = [f"Tienes {total_credits} créditos, lo que excede el máximo permitido (72) para realizar el cambio curricular."]
 
     # Cálculo del semestre en el plan nuevo (cada 18 créditos)
-    # Si un estudiante tiene, por ejemplo, 18 créditos, ya cumplió el primer semestre y está en el segundo.
     nuevo_semestre = total_credits // 18 + 1
     faltan_creditos = 18 - (total_credits % 18) if total_credits % 18 != 0 else 0
 
-
-    # Elaborar recomendaciones según rangos de créditos
+    # Elaborar recomendaciones usando los créditos totales (no el módulo)
     recomendacion = ""
-    if total_credits % 18 in range(15, 18):
-        recomendacion += "Tienes entre 15 y 17 créditos en el semestre actual; se sugiere realizar intersemestral para completar los 18 créditos.\n"
+    if total_credits in range(15, 18):
+        recomendacion += ("Haz cursado entre 15 y 17 créditos en el semestre actual; se requiere realizar intersemestral para "
+                           "completar los 18 créditos. Y pasar a segundo semestre del plan nuevo.\n")
     if total_credits in range(31, 36):
-        recomendacion += "En segundo semestre, si tienes entre 31 y 35 créditos, se recomienda realizar un intersemestral para alcanzar 36 créditos.\n"
+        recomendacion += ("Haz cursado entre 31 y 35 créditos, se recomienda realizar un intersemestral para alcanzar 36 créditos. "
+                           "Y pasar a tercer semestre del plan nuevo.\n")
     if total_credits in range(48, 54):
-        # Solo se recomienda Micropráctica si el estudiante pasaría al tercer semestre o más
         if nuevo_semestre >= 3:
-            if english_level == 4:
-                recomendacion += "Con nivel 4 de inglés y entre 48 y 53 créditos, se suman automáticamente 6 créditos de inglés; INSCRIBE Micropractica 1.\n"
-            else:
-                recomendacion += "En tercer semestre, si tienes entre 48 y 53 créditos, se recomienda realizar intersemestral para alcanzar 54 créditos y pasar a cuarto semestre, e INSCRIBE Micropractica 1.\n"
+            recomendacion += ("Haz cursado entre 48 y 53 créditos, debes INSCRIBIR Micropractica 1 en intersemestral. "
+                               "Y pasarías a cuarto semestre del plan nuevo.\n")
     if total_credits in range(37, 48):
-        recomendacion += f"Tienes entre 37 y 47 créditos; se recomienda buscar asesoría personalizada, [solicita cita aquí]({FORMS_LINK}).\n"
-    if total_credits in range(64, 72):
-        recomendacion += f"Con 64 a 71 créditos, se recomienda asesoría personalizada para definir la inscripción de Micropractica y continuar al siguiente semestre, [solicita cita aquí]({FORMS_LINK}).\n"
+        recomendacion += ("Haz cursado entre 37 y 47 créditos; se recomienda buscar asesoría personalizada, revisa la pieza gráfica.\n")
+    if total_credits in range(64, 73):
+        recomendacion += ("Haz cursado entre 64 a 72 créditos, debes INSCRIBIR Micropractica 1 en intersemestral. "
+                           "Pasarías a quinto semestre.\n")
 
-    # Solo se sugiere la inscripción de Micropractica si el estudiante está pasando a tercer semestre o superior
+    # Se sugiere Micropráctica si el estudiante pasa a tercer semestre o superior
     if nuevo_semestre >= 3:
-        # Buscamos en el currículo nuevo la asignatura de Micropractica (sólo una)
         micropractica_recomendada = None
         for course in curriculum_nuevo:
             nombre_lower = course["nombre"].lower()
@@ -344,15 +333,13 @@ if st.button("Verificar Elegibilidad"):
         st.write(f"Te faltan **{faltan_creditos}** crédito(s) para completar el semestre actual.")
     st.write(recomendacion)
 
+    # Mostrar elegibilidad: si no es elegible, solo se informa el exceso de créditos
     if elegible:
         st.success("Elegible para el cambio curricular: Sí")
     else:
-        st.error("Elegible para el cambio curricular: No")
-        st.markdown("#### Razones:")
-        for razon in razones_no_elegible:
-            st.write(f"- {razon}")
+        st.error(f"No elegible para el cambio curricular: Tienes {total_credits} créditos, lo que supera los 73 permitidos.")
 
-    # Proceso de convalidación de asignaturas (se asume que "convalidaciones" y "curriculum_nuevo" están definidos)
+    # Proceso de convalidación de asignaturas
     convalidados = []
     for course in selected_courses:
         nombre = course["nombre"]
@@ -393,7 +380,6 @@ if st.button("Verificar Elegibilidad"):
     creditos_pendientes = total_new_credits - convalidados_credits
     st.write(f"**Créditos pendientes por completar en el currículo nuevo:** {creditos_pendientes}")
 
-    # Recomendaciones para el próximo semestre: se priorizan las asignaturas de semestres bajos
     st.markdown("### Recomendaciones para el próximo semestre")
     pending_sorted = sorted(pending_courses, key=lambda x: x["semestre"])
     recommended = []
@@ -429,4 +415,5 @@ if st.button("Verificar Elegibilidad"):
         "elegibilidad": "Elegible" if elegible else "No elegible"
     }
     response = supabase.table("queries").insert(data).execute()
-    #st.write("Consulta guardada en la base de datos:", response)
+    # st.write("Consulta guardada en la base de datos:", response)
+
