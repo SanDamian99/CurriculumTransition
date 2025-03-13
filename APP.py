@@ -275,11 +275,18 @@ if st.checkbox("¿Desea agregar un curso adicional 'Otro'?"):
     selected_courses.append({"nombre": "Otro", "semestre": 0, "creditos": otro_creditos, "prerrequisitos": []})
 
 # ===============================
-# Lógica de Cálculo, Convalidaciones y Recomendaciones
+# Botón de verificación (al final y alineado a la derecha)
 # ===============================
-# Se ubica el botón de verificación en la barra lateral para mayor visibilidad
-if st.sidebar.button("VERIFICAR ELEGIBILIDAD", key="verificar", help="Haz clic para verificar tu elegibilidad"):
-    # Calcular créditos totales (se considera Historia y Fundamentos con 3 créditos)
+col1, col2 = st.columns([3, 1])
+with col2:
+    # El botón se deshabilita si no se ha ingresado el ID de la universidad
+    btn_verificar = st.button("VERIFICAR ELEGIBILIDAD", 
+                              key="verificar", 
+                              help="Haz clic para verificar tu elegibilidad",
+                              disabled=(university_id.strip() == ""))
+    
+if btn_verificar:
+    # Lógica de Cálculo, Convalidaciones y Recomendaciones
     total_credits = 0
     for course in selected_courses:
         if course["nombre"] == "Historia y Fundamentos de la Psicología":
@@ -288,107 +295,77 @@ if st.sidebar.button("VERIFICAR ELEGIBILIDAD", key="verificar", help="Haz clic p
             total_credits += course["creditos"]
 
     # Ajuste de elegibilidad: elegible solo si tiene 73 créditos o menos
-    if total_credits <= 73:
-        elegible = True
-    else:
-        elegible = False
+    elegible = total_credits <= 73
 
     # Cálculo del semestre en el plan nuevo (cada 18 créditos)
     nuevo_semestre = total_credits // 18 + 1
     faltan_creditos = 18 - (total_credits % 18) if total_credits % 18 != 0 else 0
 
-    # Elaborar recomendaciones usando los créditos totales (no el módulo)
-    recomendacion = ""
-    if total_credits in range(15, 18):
-        recomendacion += ("Haz cursado entre 15 y 17 créditos en el semestre actual; se requiere realizar intersemestral para "
-                           "completar los 18 créditos. Y pasar a segundo semestre del plan nuevo.\n")
-    if total_credits in range(31, 36):
-        recomendacion += ("Haz cursado entre 31 y 35 créditos, se recomienda realizar un intersemestral para alcanzar 36 créditos. "
-                           "Y pasar a tercer semestre del plan nuevo.\n")
-    if total_credits in range(48, 54):
-        if nuevo_semestre >= 3:
-            recomendacion += ("Haz cursado entre 48 y 53 créditos, debes INSCRIBIR Micropractica 1 en intersemestral. "
-                               "Y pasarías a cuarto semestre del plan nuevo.\n")
-    if total_credits in range(37, 48):
-        recomendacion += ("Haz cursado entre 37 y 47 créditos; se recomienda buscar asesoría personalizada, revisa la pieza gráfica.\n")
-    if total_credits in range(64, 73):
-        recomendacion += ("Haz cursado entre 64 a 72 créditos, debes INSCRIBIR Micropractica 1 en intersemestral. "
-                           "Pasarías a quinto semestre.\n")
-
-    # Se sugiere Micropráctica si el estudiante pasa a tercer semestre o superior
-    if nuevo_semestre >= 3:
-        micropractica_recomendada = None
-        for course in curriculum_nuevo:
-            nombre_lower = course["nombre"].lower()
-            if "micropractica" in nombre_lower or "micro práctica" in nombre_lower:
-                micropractica_recomendada = course["nombre"]
-                break
-        if micropractica_recomendada:
-            recomendacion = f"Prioridad: INSCRIBE {micropractica_recomendada}. " + recomendacion
-
     st.markdown("### Avance Académico")
     st.write(f"**Créditos totales cursados:** {total_credits}")
 
-    # Mostrar elegibilidad: si no es elegible, solo se informa el exceso de créditos
     if elegible:
         st.success("Elegible para el cambio curricular: Sí")
     else:
         st.error(f"No elegible para el cambio curricular: Tienes {total_credits} créditos, lo que supera los 73 permitidos.")
 
-    # Proceso de convalidación de asignaturas
-    convalidados = []
-    for course in selected_courses:
-        nombre = course["nombre"]
-        if nombre in convalidaciones:
-            mapped = convalidaciones[nombre]
-            if mapped not in convalidados:
-                convalidados.append(mapped)
-        for nuevo in curriculum_nuevo:
-            if nuevo["nombre"].lower() == nombre.lower() and nuevo["nombre"] not in convalidados:
-                convalidados.append(nuevo["nombre"])
+    # Solo si el estudiante es elegible se muestran las demás secciones
+    if elegible:
+        # Proceso de convalidación de asignaturas
+        convalidados = []
+        for course in selected_courses:
+            nombre = course["nombre"]
+            if nombre in convalidaciones:
+                mapped = convalidaciones[nombre]
+                if mapped not in convalidados:
+                    convalidados.append(mapped)
+            for nuevo in curriculum_nuevo:
+                if nuevo["nombre"].lower() == nombre.lower() and nuevo["nombre"] not in convalidados:
+                    convalidados.append(nuevo["nombre"])
 
-    st.markdown("### Cursos convalidados en el currículo nuevo:")
-    if convalidados:
-        conv_by_sem = {}
-        for curso in curriculum_nuevo:
-            if curso["nombre"] in convalidados:
-                conv_by_sem.setdefault(curso["semestre"], []).append(curso["nombre"])
-        for sem, cursos in sorted(conv_by_sem.items()):
-            st.write(f"**Semestre {sem}:** {', '.join(cursos)}")
-    else:
-        st.write("No se han identificado convalidaciones directas.")
+        st.markdown("### Cursos convalidados en el currículo nuevo:")
+        if convalidados:
+            conv_by_sem = {}
+            for curso in curriculum_nuevo:
+                if curso["nombre"] in convalidados:
+                    conv_by_sem.setdefault(curso["semestre"], []).append(curso["nombre"])
+            for sem, cursos in sorted(conv_by_sem.items()):
+                st.write(f"**Semestre {sem}:** {', '.join(cursos)}")
+        else:
+            st.write("No se han identificado convalidaciones directas.")
 
-    pending_courses = [course for course in curriculum_nuevo if course["nombre"] not in convalidados]
-    st.markdown("### Cursos pendientes por cursar en el currículo nuevo:")
-    if pending_courses:
-        pending_by_sem = {}
-        for course in pending_courses:
-            pending_by_sem.setdefault(course["semestre"], []).append(course)
-        for sem in sorted(pending_by_sem.keys()):
-            st.write(f"**Semestre {sem}:**")
-            for course in pending_by_sem[sem]:
-                st.write(f"- {course['nombre']} ({course['creditos']} créditos)")
-    else:
-        st.write("No hay cursos pendientes. ¡Felicidades!")
-        
-    total_new_credits = sum(course["creditos"] for course in curriculum_nuevo)
-    convalidados_credits = sum(course["creditos"] for course in curriculum_nuevo if course["nombre"] in convalidados)
-    creditos_pendientes = total_new_credits - convalidados_credits
-    st.write(f"**Créditos pendientes por completar en el currículo nuevo:** {creditos_pendientes}")
+        pending_courses = [course for course in curriculum_nuevo if course["nombre"] not in convalidados]
+        st.markdown("### Cursos pendientes por cursar en el currículo nuevo:")
+        if pending_courses:
+            pending_by_sem = {}
+            for course in pending_courses:
+                pending_by_sem.setdefault(course["semestre"], []).append(course)
+            for sem in sorted(pending_by_sem.keys()):
+                st.write(f"**Semestre {sem}:**")
+                for course in pending_by_sem[sem]:
+                    st.write(f"- {course['nombre']} ({course['creditos']} créditos)")
+        else:
+            st.write("No hay cursos pendientes. ¡Felicidades!")
+            
+        total_new_credits = sum(course["creditos"] for course in curriculum_nuevo)
+        convalidados_credits = sum(course["creditos"] for course in curriculum_nuevo if course["nombre"] in convalidados)
+        creditos_pendientes = total_new_credits - convalidados_credits
+        st.write(f"**Créditos pendientes por completar en el currículo nuevo:** {creditos_pendientes}")
 
-    st.markdown("### Recomendaciones para el próximo semestre")
-    pending_sorted = sorted(pending_courses, key=lambda x: x["semestre"])
-    recommended = []
-    total_rec = 0
-    for course in pending_sorted:
-        if total_rec + course["creditos"] <= 18:
-            recommended.append(course)
-            total_rec += course["creditos"]
-    st.write("Se recomienda inscribir las siguientes materias (priorizando las de semestres más bajos), para alcanzar hasta 18 créditos:")
-    for course in recommended:
-        st.write(f"- {course['nombre']} (Semestre {course['semestre']}, {course['creditos']} créditos)")
-    st.write(f"**Total de créditos recomendados:** {total_rec}")
+        st.markdown("### Recomendaciones para el próximo semestre")
+        pending_sorted = sorted(pending_courses, key=lambda x: x["semestre"])
+        recommended = []
+        total_rec = 0
+        for course in pending_sorted:
+            if total_rec + course["creditos"] <= 18:
+                recommended.append(course)
+                total_rec += course["creditos"]
+        st.write("Se recomienda inscribir las siguientes materias (priorizando las de semestres más bajos), para alcanzar hasta 18 créditos:")
+        for course in recommended:
+            st.write(f"- {course['nombre']} (Semestre {course['semestre']}, {course['creditos']} créditos)")
+        st.write(f"**Total de créditos recomendados:** {total_rec}")
 
+    # Nota de asesoría y enlace para solicitar cita
     nota = (
         "Si la información proporcionada no se ajusta a tu situación o consideras que falta algún dato, "
         "te recomendamos buscar asesoría personalizada [solicitando cita aquí]({forms_link})."
@@ -412,4 +389,3 @@ if st.sidebar.button("VERIFICAR ELEGIBILIDAD", key="verificar", help="Haz clic p
     }
     response = supabase.table("queries").insert(data).execute()
     # st.write("Consulta guardada en la base de datos:", response)
-
