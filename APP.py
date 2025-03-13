@@ -209,7 +209,7 @@ convalidaciones = {
 # ===============================
 # Banner (logo)
 # ===============================
-st.image("logo.png", caption="Facultad de Psicología y Ciencias del Comportamiento", use_column_width=True)
+st.image("shared image.png", use_column_width=True)
 
 st.title("App de Transición Curricular")
 st.markdown(
