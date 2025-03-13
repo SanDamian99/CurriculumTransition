@@ -415,7 +415,7 @@ if verificar:
 
     nota = (
         "Si la información proporcionada no se ajusta a tu situación o consideras que falta algún dato, "
-        "te recomendamos buscar asesoría personalizada [solicitando cita aquí]({forms_link})."
+        "te recomendamos buscar asesoría personalizada."
     ).replace("{forms_link}", FORMS_LINK)
     if doble_programa:
         nota += " Además, al ser estudiante de doble programa, es importante que recibas asesoría especializada."
