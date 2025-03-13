@@ -209,7 +209,7 @@ convalidaciones = {
 # ===============================
 # Banner (logo)
 # ===============================
-st.image("shared image.png", use_column_width=True)
+st.image("shared image.png", use_container_width=True)
 
 st.title("App de Transición Curricular")
 st.markdown(
