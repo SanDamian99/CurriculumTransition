@@ -215,19 +215,14 @@ st.markdown(
     """
     ### Instrucciones y Consideraciones Importantes
 
-    - **Microprácticas:**  
-      Se deben cursar de forma individual; **no se pueden ver dos microprácticas en un mismo semestre**.  
-      Se recomienda inscribir la asignatura de Micropráctica (o realizarla en intersemestral) únicamente si pasarías al tercer semestre o superior. 
-
     - La aplicación te ayudará a determinar si eres elegible para el cambio curricular, considerando que en el nuevo plan se requieren ciertos créditos mínimos y una correcta convalidación de asignaturas.
-    
-    - **Importante sobre el nivel de inglés:**  
-      Debes tener como mínimo nivel 2 de inglés. Además, según el nivel que ingreses se marcarán automáticamente las asignaturas correspondientes (por ejemplo, si indicas nivel 3, se seleccionan "Inglés Nivel 2" y "Inglés Nivel 3").  
-      Si indicas nivel 1, se te informará que adeudas 3 créditos de inglés.
 
-    - Si necesitas asesoría personalizada, por favor solicita una cita [aquí]({forms_link}).
+   
+    - **Microprácticas:** Se deben cursar de forma individual; **no se pueden ver dos microprácticas en un mismo semestre**.  
+      
+  
 
-    """.replace("{forms_link}", FORMS_LINK)
+    """
 )
 
 # ===============================
@@ -236,8 +231,8 @@ st.markdown(
 # Solicitar el ID universitario para identificar al estudiante
 university_id = st.text_input("Ingrese su ID universitario", "")
 
-english_level = st.number_input("Nivel de Inglés (1-7)", min_value=1, max_value=7, value=1, step=1)
-english_homologado = st.checkbox("He homologado inglés")
+english_level = st.number_input("Indique el Nivel de Inglés (1-7) que está cursando", min_value=1, max_value=7, value=1, step=1)
+english_homologado = st.checkbox("He homologado inglés o ya termine Ingles")
 doble_programa = st.checkbox("¿Eres estudiante de doble programa?")
 
 if english_level < 2:
