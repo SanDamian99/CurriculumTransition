@@ -327,37 +327,29 @@ if verificar:
     st.write(f"**Créditos totales cursados:** {total_credits}")
 
     if elegible:
-        # Elaborar recomendaciones usando los créditos totales (no el módulo)
+        # Elaborar recomendaciones usando los créditos totales (justo después del reporte de créditos)
         recomendacion = ""
         if total_credits in range(15, 18):
             recomendacion += ("Haz cursado entre 15 y 17 créditos en el semestre actual; se requiere realizar intersemestral para "
-                               "completar los 18 créditos. Y pasar a segundo semestre del plan nuevo.\n")
+                               "completar los 18 créditos y pasar a segundo semestre del plan nuevo.\n")
         if total_credits in range(31, 36):
-            recomendacion += ("Haz cursado entre 31 y 35 créditos, se recomienda realizar un intersemestral para alcanzar 36 créditos. "
-                               "Y pasar a tercer semestre del plan nuevo.\n")
+            recomendacion += ("Haz cursado entre 31 y 35 créditos; se recomienda realizar un intersemestral para alcanzar 36 créditos y pasar a tercer semestre del plan nuevo.\n")
         if total_credits in range(48, 54):
             if nuevo_semestre >= 3:
-                recomendacion += ("Haz cursado entre 48 y 53 créditos, debes INSCRIBIR Micropractica 1 en intersemestral. "
-                                   "Y pasarías a cuarto semestre del plan nuevo.\n")
+                recomendacion += ("Haz cursado entre 48 y 53 créditos; debes INSCRIBIR Micropractica 1 en intersemestral y pasarías a cuarto semestre del plan nuevo.\n")
         if total_credits in range(37, 48):
-            recomendacion += ("Haz cursado entre 37 y 47 créditos; se recomienda buscar asesoría personalizada, revisa la pieza gráfica.\n")
+            recomendacion += ("Haz cursado entre 37 y 47 créditos; se recomienda buscar asesoría personalizada y revisar la pieza gráfica.\n")
         if total_credits in range(64, 73):
-            recomendacion += ("Haz cursado entre 64 a 72 créditos, debes INSCRIBIR Micropractica 1 en intersemestral. "
-                               "Pasarías a quinto semestre.\n")
-
-        # Se sugiere Micropráctica si el estudiante pasa a tercer semestre o superior
-        if nuevo_semestre >= 3:
-            micropractica_recomendada = None
-            for course in curriculum_nuevo:
-                nombre_lower = course["nombre"].lower()
-                if "micropractica" in nombre_lower or "micro práctica" in nombre_lower:
-                    micropractica_recomendada = course["nombre"]
-                    break
-            if micropractica_recomendada:
-                recomendacion = f"Prioridad: INSCRIBE {micropractica_recomendada}. " + recomendacion
-
+            recomendacion += ("Haz cursado entre 64 a 72 créditos; debes INSCRIBIR Micropractica 1 en intersemestral y pasarías a quinto semestre.\n")
+        
+        # Si no se cumple ninguna condición, se imprime un mensaje predeterminado.
+        if recomendacion == "":
+            recomendacion = "No se han identificado recomendaciones específicas basadas en tus créditos actuales."
+        
+        # Imprimir la recomendación justo después de los créditos cursados
+        st.markdown("### Recomendaciones")
         st.write(recomendacion)
-
+        
         st.success("Elegible para el cambio curricular: Sí")
 
         # --- Convalidaciones y mapeo (solo si es elegible)
