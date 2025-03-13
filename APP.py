@@ -328,10 +328,6 @@ if st.sidebar.button("VERIFICAR ELEGIBILIDAD", key="verificar", help="Haz clic p
 
     st.markdown("### Avance Académico")
     st.write(f"**Créditos totales cursados:** {total_credits}")
-    st.write(f"**Estarías en el semestre {nuevo_semestre} del nuevo plan (18 créditos por semestre).**")
-    if faltan_creditos > 0:
-        st.write(f"Te faltan **{faltan_creditos}** crédito(s) para completar el semestre actual.")
-    st.write(recomendacion)
 
     # Mostrar elegibilidad: si no es elegible, solo se informa el exceso de créditos
     if elegible:
